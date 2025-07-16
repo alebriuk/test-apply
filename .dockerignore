@@ -1,0 +1,31 @@
+# Config
+.env
+docker-compose.yml
+
+# build & tools
+.gradle
+/out
+.idea
+target/
+
+# Ignore build...
+build/
+
+# ... except final jar
+!build/libs/
+!build/libs/*.jar
+
+# Others
+*.iml
+*.log
+.DS_Store
+
+# CI/CD o init
+.github/
+init-scripts/
+scripts/
+*.sh
+
+# system
+.DS_Store
+Thumbs.db
