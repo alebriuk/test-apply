@@ -1,4 +1,4 @@
-package com.challenge.salasia.api.model;
+package com.challenge.salasia.article.api.model;
 
 import java.util.List;
 

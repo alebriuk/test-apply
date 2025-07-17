@@ -1,12 +1,8 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 server:
   port: 8080
@@ -14,3 +10,7 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+springdoc:
+  swagger-ui:
+    path: /api/docs
