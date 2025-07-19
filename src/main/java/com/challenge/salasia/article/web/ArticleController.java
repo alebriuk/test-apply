@@ -91,7 +91,7 @@ public class ArticleController {
             description = "Internal error while processing",
             content = @Content)
       })
-  @PostMapping("/fetch")
+  @PostMapping("/admin/refresh")
   public ResponseEntity<Void> fetchAndStoreArticles() {
     articleService.fetchAndSaveArticles();
     return ResponseEntity.ok().build();

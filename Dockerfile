@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-alpine as build
 
 WORKDIR /app
 
