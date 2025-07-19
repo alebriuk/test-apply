@@ -1,4 +1,4 @@
-package com.challenge.salasia.shared;
+package com.challenge.salasia.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

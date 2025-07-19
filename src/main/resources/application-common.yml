@@ -12,3 +12,6 @@ scheduling:
 springdoc:
   swagger-ui:
     path: /api/docs
+  group-configs:
+    - group: v1
+      paths-to-match: /api/v1/**

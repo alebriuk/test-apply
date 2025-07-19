@@ -1,17 +1,18 @@
 # Hacker News Articles API
 
-A Spring Boot application that fetches and manages Hacker News articles about Java, with a RESTful API for querying and managing the articles.
+A Spring Boot application that fetches and manages Hacker News articles about Java, 
+with a RESTful API for querying and managing the articles.
 
 ## Features
 
-- Fetches Java-related articles from Hacker News API hourly
-- Stores articles in a PostgreSQL database
-- RESTful API with JWT authentication
-- Filterable by author, tags, title, and month
-- Paginated results (5 items per page)
-- Soft delete functionality
-- Swagger API documentation
-- Docker support
+- Hourly fetch of Java articles from Hacker News API
+- Data persisted in PostgreSQL
+- RESTful API with stateless JWT authentication
+- Article filtering by author, tags, title, and month
+- Pagination (5 items per page)
+- Soft delete (non-destructive removal)
+- Swagger/OpenAPI documentation
+- Containerized with Docker & Docker Compose
 
 ## Prerequisites
 
@@ -30,11 +31,16 @@ cd test-apply
 ### 2. Environment Setup
 Create a `.env` file in the root directory with the following variables:
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/hn_articles
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-JWT_SECRET=your-secret-key-here
-JWT_EXPIRATION_MS=86400000
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=your_database_name
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRATION=1000000 # in milliseconds
 ```
 
 ### 3. Build and Run with Docker
@@ -64,7 +70,7 @@ docker-compose up --build
 - `DELETE /api/articles/{id}` - Soft delete an article
 
 ### Admin
-- `POST /api/admin/refresh` - Force data refresh from Hacker News API
+- `POST /api/articles/refresh` - Force data refresh from Hacker News API
 
 ## Development
 
@@ -78,11 +84,6 @@ docker-compose up --build
 ./gradlew test
 ```
 
-### Check Test Coverage
-```bash
-./gradlew jacocoTestReport
-```
-
 ## Architecture
 
 - **Controller Layer**: Handles HTTP requests and responses
@@ -91,16 +92,11 @@ docker-compose up --build
 - **Scheduled Task**: Fetches new articles hourly
 - **JWT Authentication**: Secures the API endpoints
 
-## Database Schema
-
-- `article`: Stores article data from Hacker News
-- `deleted_articles`: Tracks soft-deleted articles to prevent re-insertion
-
 ## Assumptions & Choices
 
-1. Used PostgreSQL for its robustness and full-text search capabilities
-2. Implemented soft delete to track deleted articles
-3. Added monthly filtering for better search functionality
-4. Used JWT for stateless authentication
-5. Scheduled task runs hourly to fetch new articles
-6. Optimized batch inserts for better performance
+1. Used PostgreSQL for its stability and compatibility with JPA
+2. Chose Spring Security with JWT to satisfy the authorization requirement (with hardcoded credentials for simplicity)
+3. Adopted Spring Data Specification to support dynamic filtering by author, title, tags, and month
+4. Modeled tags as an @ElementCollection to simplify persistence over full normalization
+5. Skipped batch inserts to keep the challenge simple, though they are recommended for performance in production
+6. Chose to use the field storyTitle as the main title reference, since some articles may also contain a title field(not used in this context) to avoid ambiguity and ensure consistent filtering

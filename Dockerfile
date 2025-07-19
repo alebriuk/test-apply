@@ -1,7 +1,11 @@
 # Build stage
-FROM eclipse-temurin:21-jre-alpine as build
+FROM eclipse-temurin:21-jdk-alpine as build
 
 WORKDIR /app
+
+COPY gradlew gradlew
+COPY gradle gradle
+RUN chmod +x gradlew
 
 COPY . .
 

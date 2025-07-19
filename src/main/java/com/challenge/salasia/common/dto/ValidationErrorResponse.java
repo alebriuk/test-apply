@@ -1,4 +1,4 @@
-package com.challenge.salasia.shared;
+package com.challenge.salasia.common.dto;
 
 import java.util.List;
 

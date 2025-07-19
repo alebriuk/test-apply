@@ -3,7 +3,7 @@ package com.challenge.salasia.article.web;
 import com.challenge.salasia.article.application.ArticleService;
 import com.challenge.salasia.article.domain.Article;
 import com.challenge.salasia.article.web.dto.ArticleSearchRequest;
-import com.challenge.salasia.shared.PagedResponse;
+import com.challenge.salasia.common.dto.PagedResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/articles")
+@RequestMapping("/api/v1/articles")
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Articles", description = "Operations related to articles")
 @Slf4j
@@ -91,7 +91,7 @@ public class ArticleController {
             description = "Internal error while processing",
             content = @Content)
       })
-  @PostMapping("/admin/refresh")
+  @PostMapping("/refresh")
   public ResponseEntity<Void> fetchAndStoreArticles() {
     articleService.fetchAndSaveArticles();
     return ResponseEntity.ok().build();

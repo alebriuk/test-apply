@@ -10,16 +10,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ArticleScheduler {
 
-    private final ArticleService articleService;
+  private final ArticleService articleService;
 
-    @Scheduled(fixedRateString = "${scheduling.articles.rate}")
-    public void scheduledFetchAndSaveArticles() {
-        log.info("Scheduled execution: fetching and saving articles");
-        try {
-            articleService.fetchAndSaveArticles();
-        } catch (Exception e) {
-            log.error("Scheduled job failed", e);
-        }
+  @Scheduled(fixedRateString = "${scheduling.articles.rate}")
+  public void scheduledFetchAndSaveArticles() {
+    log.info("Scheduled execution: fetching and saving articles");
+    try {
+      articleService.fetchAndSaveArticles();
+    } catch (Exception e) {
+      log.error("Scheduled job failed", e);
     }
+  }
 }
-

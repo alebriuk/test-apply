@@ -44,8 +44,6 @@ public class ArticleSpecification {
         Month m = Month.valueOf(month.toUpperCase());
         String monthNum = String.format("%02d", m.getValue());
 
-        log.info("Filtrando por mes '{}', convertido a número '{}'", month, monthNum);
-
         Expression<String> monthExpr =
             cb.function("TO_CHAR", String.class, root.get(FIELD_CREATED_AT), cb.literal("MM"));
         return cb.equal(monthExpr, monthNum);

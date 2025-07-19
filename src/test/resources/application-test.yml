@@ -7,7 +7,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-
-jwt:
-  secret: "hey"
-  expiration: 1231231

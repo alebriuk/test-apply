@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,6 @@ public class ArticleService {
     var newArticles = processNewArticles(response);
 
     if (!newArticles.isEmpty()) {
-      log.info("Found {} new articles", newArticles.size());
       saveBatch(newArticles.values().stream().toList());
       log.info("{} new articles saved successfully", newArticles.size());
     } else {
@@ -57,7 +57,11 @@ public class ArticleService {
             .withMonth(req.month())
             .build();
 
-    return articleRepository.findAll(spec, pageable);
+    Page<Article> page = articleRepository.findAll(spec, pageable);
+
+    List<Article> articlesWithTags = replaceArticlesWithFetchedTags(page);
+
+    return new PageImpl<>(articlesWithTags, pageable, page.getTotalElements());
   }
 
   @Transactional
@@ -66,10 +70,19 @@ public class ArticleService {
         .findById(id)
         .map(
             article -> {
+              if (article.isDeleted()) {
+                log.info("Article with id [{}] was already marked as deleted.", id);
+                return false;
+              }
               article.setDeleted(true);
+              log.info("Article with id [{}] marked as deleted.", id);
               return true;
             })
-        .orElse(false);
+        .orElseGet(
+            () -> {
+              log.warn("Article with id [{}] not found. Cannot mark as deleted.", id);
+              return false;
+            });
   }
 
   private Map<String, Article> processNewArticles(AlgoliaResponse response) {
@@ -100,10 +113,15 @@ public class ArticleService {
             .map(Article::getObjectId)
             .collect(Collectors.toSet());
 
-    log.info("{} new articles found", newArticles.size());
-    return newArticles.entrySet().stream()
-        .filter(entry -> !existingIds.contains(entry.getKey()))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    Map<String, Article> trulyNewArticles =
+        newArticles.entrySet().stream()
+            .filter(entry -> !existingIds.contains(entry.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    log.info("{} articles received from external API", newArticles.size());
+    log.info("{} new articles to persist", trulyNewArticles.size());
+
+    return trulyNewArticles;
   }
 
   private void saveBatch(List<Article> batch) {
@@ -120,8 +138,7 @@ public class ArticleService {
       try {
         articleRepository.save(article);
       } catch (Exception e) {
-        log.error("Error saving article {}: {}",
-                article.getObjectId(), e.getMessage());
+        log.error("Error saving article {}: {}", article.getObjectId(), e.getMessage());
       }
     }
   }
@@ -131,5 +148,17 @@ public class ArticleService {
         && !article.getObjectId().isBlank()
         && article.getStoryTitle() != null
         && !article.getStoryTitle().isBlank();
+  }
+
+  private List<Article> replaceArticlesWithFetchedTags(Page<Article> page) {
+    List<String> ids = page.getContent().stream().map(Article::getObjectId).toList();
+
+    List<Article> articlesWithTagsById = articleRepository.findAllWithTagsByIdIn(ids);
+
+    Map<String, Article> map =
+        articlesWithTagsById.stream()
+            .collect(Collectors.toMap(Article::getObjectId, Function.identity()));
+
+    return page.getContent().stream().map(a -> map.getOrDefault(a.getObjectId(), a)).toList();
   }
 }

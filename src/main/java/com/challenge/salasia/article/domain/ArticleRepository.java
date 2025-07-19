@@ -1,15 +1,14 @@
 package com.challenge.salasia.article.domain;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ArticleRepository
     extends JpaRepository<Article, String>, JpaSpecificationExecutor<Article> {
 
-  @EntityGraph(attributePaths = "tags")
-  Page<Article> findAll(Specification<Article> spec, Pageable pageable);
+  @Query("SELECT a FROM Article a LEFT JOIN FETCH a.tags WHERE a.objectId IN :ids")
+  List<Article> findAllWithTagsByIdIn(@Param("ids") List<String> ids);
 }
