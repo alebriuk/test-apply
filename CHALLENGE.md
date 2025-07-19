@@ -35,7 +35,8 @@ Other than that, you are free to use any other dependencies that are suitable fo
 
 When you finish, write an email to `<recruiter email>` to let us know.
 
-Include a README that explains everything we need to do to run the demo application, such as setting up a database, forcing a data refresh to populate the DB for the first time, assumptions, choices, etc.
+Include a README that explains everything we need to do to run the demo application,
+such as setting up a database, forcing a data refresh to populate the DB for the first time, assumptions, choices, etc.
 
 If you have any questions about the task, please let us know.
 

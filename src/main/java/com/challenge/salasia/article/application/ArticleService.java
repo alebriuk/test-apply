@@ -16,7 +16,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,23 +27,17 @@ public class ArticleService {
   private final ArticleProvider articleProvider;
   private final ArticleRepository articleRepository;
 
-  @Scheduled(fixedRate = 3600000)
   @Transactional
   public void fetchAndSaveArticles() {
-    log.info("Scheduling fetch and save articles");
-    try {
-      var response = articleProvider.fetchArticles();
-      var newArticles = processNewArticles(response);
+    var response = articleProvider.fetchArticles();
+    var newArticles = processNewArticles(response);
 
-      if (!newArticles.isEmpty()) {
-        saveBatch(new ArrayList<>(newArticles.values()));
-        log.info("{} new articles saved successfully", newArticles.size());
-      } else {
-        log.info("No new articles to save");
-      }
-    } catch (Exception e) {
-      log.error("Error while saving articles", e);
-      throw e;
+    if (!newArticles.isEmpty()) {
+      log.info("Found {} new articles", newArticles.size());
+      saveBatch(newArticles.values().stream().toList());
+      log.info("{} new articles saved successfully", newArticles.size());
+    } else {
+      log.info("No new articles to save");
     }
   }
 
@@ -123,12 +116,12 @@ public class ArticleService {
   }
 
   private void saveOneByOne(List<Article> batch) {
-    for (Article article : new ArrayList<>(batch)) {
+    for (Article article : batch) {
       try {
         articleRepository.save(article);
       } catch (Exception e) {
-        log.error("Error saving article {}: {}", article.getObjectId(), e.getMessage());
-        batch.remove(article);
+        log.error("Error saving article {}: {}",
+                article.getObjectId(), e.getMessage());
       }
     }
   }
