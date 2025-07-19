@@ -9,7 +9,7 @@ RUN chmod +x gradlew
 
 COPY . .
 
-RUN ./gradlew clean build -x test
+RUN ./gradlew spotlessApply && ./gradlew clean build -x test
 
 # Runtime stage
 FROM eclipse-temurin:21-jre

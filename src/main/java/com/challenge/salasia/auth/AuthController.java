@@ -38,7 +38,7 @@ public class AuthController {
         @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content)
       })
   @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+  public ResponseEntity<?> login(@RequestBody LogInRequest request) {
     String username = request.username();
     String password = request.password();
 
