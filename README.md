@@ -49,28 +49,29 @@ docker-compose up --build
 ```
 
 ### 4. Access the Application
-- API Base URL: `http://localhost:8080/api`
+- API Base URL: `http://localhost:8080`
 - Swagger UI: `http://localhost:8080/api/docs`
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - Get JWT token
+- `POST /auth/login` - Get JWT token
   - Body: `{"username":"admin", "password":"password"}`
   - Add token to subsequent requests in the `Authorization` header: `Bearer <token>`
 
 ### Articles
-- `GET /api/articles` - Get paginated articles
+- `GET /api/v1/articles` - Get paginated articles
   - Query params: 
     - `page` (default: 0)
     - `author` (optional)
     - `tags` (comma-separated)
     - `title` (partial match)
     - `month` (e.g., "january")
-- `DELETE /api/articles/{id}` - Soft delete an article
+
+- `DELETE /api/v1/articles/{id}` - Soft delete an article
 
 ### Admin
-- `POST /api/articles/refresh` - Force data refresh from Hacker News API
+- `POST /api/v1/articles/refresh` - Force data refresh from Hacker News API
 
 ## Development
 
