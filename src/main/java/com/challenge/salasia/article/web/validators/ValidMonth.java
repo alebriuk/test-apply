@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MonthValidator.class)
 public @interface ValidMonth {
-  String message() default "Mes inválido. Debe estar en inglés (e.g. 'july')";
+  String message() default "Invalid month. Must be in English (e.g. 'july')";
 
   Class<?>[] groups() default {};
 
